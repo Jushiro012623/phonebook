@@ -8,10 +8,17 @@ import {changePasswordSchema} from "#/lib/zod/schema.ts";
 import {useFormValue} from "#/hooks";
 
 export const Route = createFileRoute('/auth/change-password')({
-    component: RouteComponent,
+    component: ChangePassword,
+    head: () => ({
+        meta: [
+            {
+                title: "Change Password | Phone Book",
+            },
+        ],
+    }),
 })
 
-function RouteComponent() {
+function ChangePassword() {
 
     const {formValue, handleOnChange, errors, setErrors} = useFormValue<ChangePasswordFormValue>({
         confirmPassword: "",

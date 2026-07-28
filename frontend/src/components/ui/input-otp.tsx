@@ -107,7 +107,7 @@ export function InputOtp({
                     onKeyDown={handleKeyDown(index)}
                     onPaste={handlePaste}
                     className={cn(
-                        "h-15 w-15 rounded-xl border border-border bg-background text-center text-xl font-semibold outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
+                        "h-15 w-15 rounded-xl border border-border bg-background text-center text-xl font-semibold outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50",
                     )}
                 />
             ))}
