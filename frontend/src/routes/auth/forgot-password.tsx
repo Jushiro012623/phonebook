@@ -67,6 +67,7 @@ function ForgotPassword() {
     };
 
     const handleResendOTP = () => {
+        setOtp('')
         setResendTimer(RESEND_SECONDS);
         toast.success("OTP Sent", "Please check your email.");
     }
