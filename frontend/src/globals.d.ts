@@ -17,6 +17,11 @@ declare global {
         email: string;
     }
 
+    type ChangePasswordFormValue = {
+        password: string;
+        confirmPassword: string;
+    }
+
     type FormPassword = "text" | "password";
 
     type SVGProps = React.SVGProps<SVGSVGElement>;

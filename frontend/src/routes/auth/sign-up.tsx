@@ -102,7 +102,7 @@ function SignUp() {
                                 onChange={handleOnChange}
                                 placeholder="••••••••"
                                 state={errors.password ? 'error' : 'base'}
-                                description={errors.password}
+                                description={errors.password ?? "Use at least 8 characters with a mix of letters, numbers, and symbols for better security." }
                                 className={cn(passwordInput.type === 'password' ? "tracking-widest" : null)}
                                 leftIcon={<Lock size={16}/>}
                                 rightIcon={
