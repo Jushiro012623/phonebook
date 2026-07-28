@@ -51,19 +51,15 @@ function SignIn() {
             <div className="mx-auto flex h-fit w-full  p-6 sm:p-12 md:p-16 lg:w-1/2">
                 <GridBackground/>
                 <div className="card p-10 mx-auto w-full max-w-lg">
-                    <header className="mb-10 space-y-3 text-center lg:text-left">
+                    <header className="mb-5 space-y-3 text-center flex flex-col items-center">
                         <Brand/>
-                        <h1 className="text-3xl font-bold md:text-4xl">
-                            Welcome Back
+                        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                            Sign in to your account
                         </h1>
-
-                        <p className="mt-3 text-sm text-muted-foreground">
-                            Sign in to securely access your contacts, manage your
-                            directory, and keep your information organized in one
-                            place.
+                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                            Access your contacts and manage your directory securely in one place.
                         </p>
                     </header>
-
                     <form className="space-y-5" onSubmit={handleOnSubmit}>
                         <div className="space-y-4">
                             <Input

@@ -83,18 +83,17 @@ function ForgotPassword() {
                 <GridBackground/>
 
                 <div className="card mx-auto w-full max-w-lg p-10">
-                    <header className="mb-8 text-center lg:text-left">
-                        <Brand/>
+                    <header className="mb-5 flex flex-col items-center space-y-3 text-center">
+                    <Brand />
 
-                        <h1 className="text-3xl font-bold md:text-4xl">
-                            Forgot Password
-                        </h1>
+                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                        Forgot your password?
+                    </h1>
 
-                        <p className="mt-3 text-sm text-muted-foreground">
-                            Enter the email address associated with your account.
-                            We'll send you a link to reset your password.
-                        </p>
-                    </header>
+                    <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                        Enter your email address and we'll send you a verification code to reset your password.
+                    </p>
+                </header>
 
                     <form
                         className="space-y-5"

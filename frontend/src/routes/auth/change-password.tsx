@@ -1,13 +1,13 @@
-import {createFileRoute} from '@tanstack/react-router'
+import {createFileRoute} from "@tanstack/react-router";
 import {Brand, GridBackground} from "@components/layout";
 import {Button, Input, Main} from "@components/ui";
 import {Lock} from "lucide-react";
-import {toast} from "#/lib/utils.ts";
+import {cn, toast} from "#/lib/utils.ts";
 import type {FormEvent} from "react";
 import {changePasswordSchema} from "#/lib/zod/schema.ts";
-import {useFormValue} from "#/hooks";
+import {useEyeToggle, useFormValue} from "#/hooks";
 
-export const Route = createFileRoute('/auth/change-password')({
+export const Route = createFileRoute("/auth/change-password")({
     component: ChangePassword,
     head: () => ({
         meta: [
@@ -16,16 +16,20 @@ export const Route = createFileRoute('/auth/change-password')({
             },
         ],
     }),
-})
+});
 
 function ChangePassword() {
+    const passwordInput = useEyeToggle();
+    const confirmPasswordInput = useEyeToggle();
 
-    const {formValue, handleOnChange, errors, setErrors} = useFormValue<ChangePasswordFormValue>({
-        confirmPassword: "",
-        password: "",
-    });
+    const {formValue, handleOnChange, errors, setErrors} =
+        useFormValue<ChangePasswordFormValue>({
+            password: "",
+            confirmPassword: "",
+        });
+
     const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
 
         const result = changePasswordSchema.safeParse(formValue);
 
@@ -37,13 +41,19 @@ function ChangePassword() {
                 confirmPassword: fieldErrors.confirmPassword?.[0],
             });
 
-            toast.error("Validation Error", "Please check the highlighted fields.");
+            toast.error(
+                "Validation Error",
+                "Please check the highlighted fields."
+            );
 
             return;
         }
 
-        toast.success("Success", "Password changed successfully")
-    }
+        toast.success(
+            "Password Updated",
+            "Your password has been updated successfully."
+        );
+    };
 
     return (
         <Main className="flex flex-col justify-center">
@@ -51,15 +61,16 @@ function ChangePassword() {
                 <GridBackground/>
 
                 <div className="card mx-auto w-full max-w-lg p-10">
-                    <header className="mb-8 text-center lg:text-left">
+                    <header className="mb-5 flex flex-col items-center space-y-3 text-center">
                         <Brand/>
 
-                        <h1 className="text-3xl font-bold md:text-4xl">
-                            Change Password
+                        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                            Create a new password
                         </h1>
 
-                        <p className="mt-3 text-sm text-muted-foreground">
-                            Enter your new password
+                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                            Your new password must be different from your previous
+                            password.
                         </p>
                     </header>
 
@@ -68,38 +79,83 @@ function ChangePassword() {
                         onSubmit={handleOnSubmit}
                     >
                         <Input
-                            label="Password"
+                            label="New Password"
                             name="password"
-                            type="password"
+                            type={passwordInput.type}
                             value={formValue.password}
                             onChange={handleOnChange}
+                            placeholder="Enter your new password"
                             leftIcon={<Lock size={16}/>}
-                            placeholder="••••••••"
-                            state={errors.password ? 'error' : 'base'}
-                            description={errors.password ?? "Use at least 8 characters with a mix of letters, numbers, and symbols for better security."}
+                            state={errors.password ? "error" : "base"}
+                            description={
+                                errors.password ??
+                                "Use at least 8 characters with a mix of letters, numbers, and symbols."
+                            }
+                            className={cn(
+                                passwordInput.type === "password" && formValue.password
+                                    ? "tracking-widest"
+                                    : undefined
+                            )}
+                            rightIcon={
+                                formValue.password ? (
+                                    <button
+                                        type="button"
+                                        onClick={passwordInput.toggle}
+                                        className="flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                                        aria-label={
+                                            passwordInput.type === "password"
+                                                ? "Show password"
+                                                : "Hide password"
+                                        }
+                                    >
+                                        {passwordInput.icon}
+                                    </button>
+                                ) : null
+                            }
                         />
+
                         <Input
                             label="Confirm Password"
                             name="confirmPassword"
-                            type="password"
-                            onChange={handleOnChange}
+                            type={confirmPasswordInput.type}
                             value={formValue.confirmPassword}
-                            placeholder="••••••••"
-                            state={errors.confirmPassword ? 'error' : 'base'}
-                            description={errors.confirmPassword}
+                            onChange={handleOnChange}
+                            placeholder="Confirm your new password"
                             leftIcon={<Lock size={16}/>}
+                            state={errors.confirmPassword ? "error" : "base"}
+                            description={errors.confirmPassword}
+                            className={cn(
+                                confirmPasswordInput.type === "password" && formValue.confirmPassword
+                                    ? "tracking-widest"
+                                    : undefined
+                            )}
+                            rightIcon={
+                                formValue.confirmPassword ? (
+                                    <button
+                                        type="button"
+                                        onClick={confirmPasswordInput.toggle}
+                                        className="flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                                        aria-label={
+                                            confirmPasswordInput.type === "password"
+                                                ? "Show password"
+                                                : "Hide password"
+                                        }
+                                    >
+                                        {confirmPasswordInput.icon}
+                                    </button>
+                                ) : null
+                            }
                         />
 
                         <Button
                             type="submit"
-                            className="w-full rounded-xl py-6 text-sm font-semibold"
+                            className="mt-2 w-full rounded-xl py-6 text-sm font-semibold"
                         >
-                            Change Password
+                            Update Password
                         </Button>
                     </form>
-
                 </div>
             </div>
         </Main>
-    )
+    );
 }

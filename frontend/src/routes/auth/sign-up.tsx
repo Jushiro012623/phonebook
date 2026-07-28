@@ -57,15 +57,14 @@ function SignUp() {
                 <GridBackground/>
 
                 <div className="card mx-auto w-full max-w-lg p-10">
-                    <header className="mb-8 text-center lg:text-left">
+                    <header className="mb-5 flex flex-col items-center space-y-3 text-center">
                         <Brand/>
-
-                        <h1 className="text-3xl font-bold md:text-4xl">
-                            Create Account
+                        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                            Create your account
                         </h1>
 
-                        <p className="mt-3 text-sm text-muted-foreground">
-                            Sign up to manage your contacts securely.
+                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                            Create an account to securely store, organize, and manage your contacts.
                         </p>
                     </header>
 
@@ -102,7 +101,7 @@ function SignUp() {
                                 onChange={handleOnChange}
                                 placeholder="••••••••"
                                 state={errors.password ? 'error' : 'base'}
-                                description={errors.password ?? "Use at least 8 characters with a mix of letters, numbers, and symbols for better security." }
+                                description={errors.password ?? "Use at least 8 characters with a mix of letters, numbers, and symbols for better security."}
                                 className={cn(passwordInput.type === 'password' ? "tracking-widest" : null)}
                                 leftIcon={<Lock size={16}/>}
                                 rightIcon={

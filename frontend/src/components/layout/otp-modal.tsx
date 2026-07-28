@@ -27,19 +27,21 @@ export function OtpModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
             <div className="card w-full max-w-lg animate-in fade-in zoom-in-95 duration-200 p-10">
-                <header className="mb-8 text-center lg:text-left">
+                <header className="mb-5 flex flex-col items-center space-y-3 text-center">
                     <Brand/>
-                    <h2 className="text-3xl font-bold">
-                        Verify Email
-                    </h2>
 
-                    <p className="mt-3 text-sm text-muted-foreground">
-                        We've sent a 6-digit verification code to
-                    </p>
+                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                        Verify your email
+                    </h1>
+                    <div>
+                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                            Enter the 6-digit verification code we sent to
+                        </p>
 
-                    <p className="mt-1 break-all font-medium text-primary">
-                        {email}
-                    </p>
+                        <p className="break-all text-sm font-medium text-primary">
+                            {email}
+                        </p>
+                    </div>
                 </header>
 
                 <div className="my-10 flex justify-center">
