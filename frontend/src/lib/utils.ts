@@ -1,7 +1,13 @@
 import {useToastStore, type ToastOptions} from "#/lib/store";
+import {clsx, type ClassValue} from "clsx"
+import {twMerge} from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs))
+}
 
 export const toast = {
-    show: ({ title, description, type = 'info' }: ToastOptions) => {
+    show: ({title, description, type = 'info'}: ToastOptions) => {
         useToastStore.getState().addToast({
             title,
             description,

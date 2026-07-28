@@ -1,89 +1,156 @@
-import {createFileRoute, Link} from "@tanstack/react-router";
-import {Button, Input, Main} from "#/components/ui";
+import {createFileRoute, Link} from '@tanstack/react-router'
+import {Button, Input, Main} from '#/components/ui'
+import {Brand, GridBackground} from "@components/layout";
+import {Lock, Mail} from "lucide-react";
+import {cn, toast} from "#/lib/utils.ts";
+import {useEyeToggle, useFormValue} from "#/hooks";
+import {type FormEvent, useState} from "react";
+import {signInSchema} from "#/lib/zod/schema.ts";
 
-export const Route = createFileRoute("/auth/sign-in")({
-    component: RouteComponent,
-});
+export const Route = createFileRoute('/auth/sign-in')({
+    component: SignIn,
+    head: () => ({
+        meta: [
+            {
+                title: 'Sign In | Phone Book',
+            }
+        ]
+    })
+})
 
-function RouteComponent() {
+function SignIn() {
+
+    const passwordInput = useEyeToggle()
+
+    const {formValue, handleOnChange, errors, setErrors} = useFormValue<SignInFormValue>({username: '', password: ''});
+
+    const [rememberMe, setRememberMe] = useState(false);
+
+    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        const result = signInSchema.safeParse(formValue);
+
+        if (!result.success) {
+            const fieldErrors = result.error.flatten().fieldErrors;
+
+            setErrors({
+                username: fieldErrors.username?.[0],
+                password: fieldErrors.password?.[0],
+            })
+
+            toast.error("Validation Error", "Please check the highlighted fields.");
+            return;
+        }
+
+        toast.success("SUCCESS", "LOGGED IN SUCCESSFULLY");
+    }
+
     return (
-        <Main className="flex">
-
-            <div className="flex flex-col justify-center w-full lg:w-1/2 h-fit p-6 sm:p-12 md:p-16  mx-auto">
-                <div className="w-full max-w-md mx-auto">
+        <Main className="flex flex-col justify-center">
+            <div className="mx-auto flex h-fit w-full  p-6 sm:p-12 md:p-16 lg:w-1/2">
+                <GridBackground/>
+                <div className="card p-10 mx-auto w-full max-w-lg">
                     <header className="mb-10 space-y-3 text-center lg:text-left">
-                        <span className="font-serif text-sm tracking-[0.25em] uppercase text-muted-foreground">
-                            Phone Book.
-                        </span>
-
-                        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.1]">
+                        <Brand/>
+                        <h1 className="text-3xl font-bold md:text-4xl">
                             Welcome Back
                         </h1>
 
-                        <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
-                            Access your saved finds, past orders, and early thrift drops
+                        <p className="mt-3 text-sm text-muted-foreground">
+                            Sign in to securely access your contacts, manage your
+                            directory, and keep your information organized in one
+                            place.
                         </p>
                     </header>
 
-                    <form className="space-y-5">
+                    <form className="space-y-5" onSubmit={handleOnSubmit}>
                         <div className="space-y-4">
                             <Input
-                                label="Email"
+                                label="Email or Username"
+                                name="username"
+                                value={formValue.username}
+                                onChange={handleOnChange}
                                 placeholder="john@example.com"
+                                leftIcon={<Mail size={16}/>}
+                                state={errors.username ? 'error' : 'base'}
+                                description={errors.username}
                             />
 
-                            <div className="space-y-1">
-                                <Input
-                                    label="Password"
-                                    type="password"
-                                    className="tracking-widest"
-                                    placeholder="••••••••"
-                                />
-                                <div className="flex justify-end pt-1">
-                                    <button type="button"
-                                            className="text-xs text-muted-foreground hover:text-primary hover:underline transition-colors">
-                                        Forgot Password?
-                                    </button>
-                                </div>
-                            </div>
+                            <Input
+                                label="Password"
+                                type={passwordInput.type}
+                                className={cn(passwordInput.type === 'password' ? "tracking-widest" : null)}
+                                placeholder="••••••••"
+                                value={formValue.password}
+                                name="password"
+                                onChange={handleOnChange}
+                                state={errors.password ? 'error' : 'base'}
+                                description={errors.password}
+                                leftIcon={<Lock size={16}/>}
+                                rightIcon={
+                                    formValue.password ? (
+                                        <button
+                                            type="button"
+                                            onClick={passwordInput.toggle}
+                                            className="flex items-center justify-center text-muted-foreground transition-colors "
+                                        >
+                                            {passwordInput.icon}
+                                        </button>
+                                    ) : null
+                                }
+                            />
                         </div>
 
-                        <Button className="w-full rounded-full py-6 text-md mt-2">
+                        <div className="flex items-center justify-between text-sm">
+                            <label className="flex items-center gap-2 text-muted-foreground">
+                                <input
+                                    type="checkbox"
+                                    className="rounded border-border"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                />
+                                Remember me
+                            </label>
+
+                            <Link
+                                to="/auth/forgot-password"
+                                className="font-medium text-primary transition-colors hover:text-primary/80"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
+
+                        <Button type="submit" className="mt-2 w-full rounded-xl py-6 text-sm font-semibold">
                             Sign In
                         </Button>
-
-                        <div className="relative py-4">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-border"/>
-                            </div>
-                            <div className="relative flex justify-center">
-                                <span
-                                    className="bg-background px-4 text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                                    Or sign in with
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <Button variant="muted" type="button" className="justify-center gap-3 w-full">
-                                Google
-                            </Button>
-
-                            <Button variant="muted" type="button" className="justify-center gap-3 w-full">
-                                Facebook
-                            </Button>
-                        </div>
                     </form>
 
-                    <p className="mt-10 text-center text-sm text-muted-foreground">
-                        New to Triumphs Co?{" "}
-                        <Link to="/auth/sign-up"
-                              className="font-medium text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">
-                            Join the thrift community
+                    <div className="relative py-5">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-border"/>
+                        </div>
+
+                        <div className="relative flex justify-center">
+                            <span
+                                className="bg-background px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                                Don't Have an Account?
+                            </span>
+                        </div>
+                    </div>
+                    <p className="text-center text-sm text-muted-foreground">
+                        <Link
+                            to="/auth/sign-up"
+                        >
+                            <Button
+                                variant="secondary"
+                                className="w-full rounded-xl py-6 text-sm font-semibold">
+                                Create Account
+                            </Button>
                         </Link>
                     </p>
                 </div>
             </div>
         </Main>
-    );
+    )
 }

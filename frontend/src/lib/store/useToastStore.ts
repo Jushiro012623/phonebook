@@ -3,7 +3,6 @@ import {v4 as uuidv4} from 'uuid';
 
 export type ToastType = 'success' | 'error' | 'info'
 
-
 export const TOAST_DURATION = 3000;
 
 export type Toast = {

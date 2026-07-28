@@ -1,111 +1,183 @@
 import {createFileRoute, Link} from '@tanstack/react-router'
+import {type FormEvent} from "react";
+import {Lock, Mail, User} from "lucide-react";
 import {Button, Input, Main} from "#/components/ui";
+import {Brand, GridBackground} from "@components/layout";
+import {cn, toast} from "#/lib/utils.ts";
+import {useEyeToggle} from "#/hooks";
+import {useFormValue} from "#/hooks/useFormValue.tsx";
+import {signUpSchema} from "#/lib/zod/schema.ts";
 
-export const Route = createFileRoute('/auth/sign-up')({
-    component: RouteComponent,
-})
+export const Route = createFileRoute("/auth/sign-up")({
+    component: SignUp,
+    head: () => ({
+        meta: [
+            {
+                title: 'Sign Up | Phone Book',
+            }
+        ]
+    })
+});
 
-function RouteComponent() {
+function SignUp() {
+
+    const passwordInput = useEyeToggle()
+    const confirmPasswordInput = useEyeToggle()
+
+    const {errors, setErrors, handleOnChange, formValue} = useFormValue<SignUpFormValue>({
+        username: "", password: "", confirmPassword: "", email: ""
+    })
+    const {confirmPassword, password, email, username} = formValue
+
+    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        const result = signUpSchema.safeParse(formValue);
+
+        if (!result.success) {
+            const fieldErrors = result.error.flatten().fieldErrors;
+
+            setErrors({
+                username: fieldErrors.username?.[0],
+                password: fieldErrors.password?.[0],
+                confirmPassword: fieldErrors.confirmPassword?.[0],
+                email: fieldErrors.email?.[0],
+            })
+
+            toast.error("Validation Error", "Please check the highlighted fields.");
+            return;
+        }
+
+        toast.success("SUCCESS", "ACCOUNT CREATED SUCCESSFULLY")
+    }
+
     return (
-        <Main className="flex">
-            <div className="flex flex-col justify-center w-full lg:w-1/2 h-fit p-6 sm:p-12 md:p-16 mx-auto">
+        <Main className="flex flex-col justify-center">
+            <div className="mx-auto flex h-fit w-full p-6 sm:p-12 md:p-16 lg:w-1/2">
+                <GridBackground/>
 
-                {/* Tighter max-w-sm wrapper matching the Sign In page */}
-                <div className="w-full max-w-md mx-auto">
+                <div className="card mx-auto w-full max-w-lg p-10">
+                    <header className="mb-8 text-center lg:text-left">
+                        <Brand/>
 
-                    <header className="mb-10 space-y-3 text-center lg:text-left">
-                    <span className="font-serif text-sm tracking-[0.25em] uppercase text-muted-foreground">
-                        Triumphs Co.
-                    </span>
-
-                        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.1]">
-                            Join the Thrift Community
+                        <h1 className="text-3xl font-bold md:text-4xl">
+                            Create Account
                         </h1>
 
-                        <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
-                            Create an account to save your finds, track orders, and get early access to new thrift
-                            drops.
+                        <p className="mt-3 text-sm text-muted-foreground">
+                            Sign up to manage your contacts securely.
                         </p>
                     </header>
 
-                    <form className="space-y-5">
+                    <form className="space-y-5" onSubmit={handleOnSubmit}>
                         <div className="space-y-4">
                             <Input
                                 label="Username"
-                                placeholder="john_doe"
+                                placeholder="johndoe"
+                                leftIcon={<User size={16}/>}
+                                name="username"
+                                state={errors.username ? 'error' : 'base'}
+                                description={errors.username}
+                                value={username}
+                                onChange={handleOnChange}
                             />
 
                             <Input
-                                label="Email"
+                                label="Email Address"
+                                type="email"
+                                name="email"
+                                state={errors.email ? 'error' : 'base'}
+                                description={errors.email}
+                                value={email}
+                                onChange={handleOnChange}
                                 placeholder="john@example.com"
+                                leftIcon={<Mail size={16}/>}
                             />
 
                             <Input
                                 label="Password"
-                                type="password"
-                                className="tracking-widest"
+                                type={passwordInput.type}
+                                name="password"
+                                value={password}
+                                onChange={handleOnChange}
                                 placeholder="••••••••"
-                                description="Use at least 8 characters with a mix of letters, numbers, and symbols for better security."
+                                state={errors.password ? 'error' : 'base'}
+                                description={errors.password}
+                                className={cn(passwordInput.type === 'password' ? "tracking-widest" : null)}
+                                leftIcon={<Lock size={16}/>}
+                                rightIcon={
+                                    password ? (
+                                        <button
+                                            type="button"
+                                            onClick={passwordInput.toggle}
+                                            className="flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                                            aria-label={
+                                                passwordInput.type === "password"
+                                                    ? "Show password"
+                                                    : "Hide password"
+                                            }
+                                        >
+                                            {passwordInput.icon}
+                                        </button>
+                                    ) : null
+                                }
                             />
 
                             <Input
                                 label="Confirm Password"
-                                type="password"
-                                className="tracking-widest"
+                                type={confirmPasswordInput.type}
                                 placeholder="••••••••"
+                                name="confirmPassword"
+                                value={confirmPassword}
+                                onChange={handleOnChange}
+                                state={errors.confirmPassword ? 'error' : 'base'}
+                                description={errors.confirmPassword}
+                                className={cn(confirmPasswordInput.type === 'password' ? "tracking-widest" : null)}
+                                leftIcon={<Lock size={16}/>}
+                                rightIcon={
+                                    confirmPassword ? (
+                                        <button
+                                            type="button"
+                                            onClick={confirmPasswordInput.toggle}
+                                            className="flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                                        >
+                                            {confirmPasswordInput.icon}
+                                        </button>
+                                    ) : null
+                                }
                             />
                         </div>
 
-                        <Button className="w-full rounded-full py-6 text-sm mt-2 font-medium tracking-wide">
+                        <Button
+                            type="submit"
+                            className="mt-2 w-full rounded-xl py-6 text-sm font-semibold">
                             Create Account
                         </Button>
-
-                        <p className="text-xs text-center text-muted-foreground leading-relaxed pt-2">
-                            By joining, you agree to our{" "}
-                            <a href="/privacy-policy"
-                               className="text-primary hover:text-primary/80 hover:underline transition-colors">
-                                Privacy Policy
-                            </a>{" "}
-                            and{" "}
-                            <a href="/terms"
-                               className="text-primary hover:text-primary/80 hover:underline transition-colors">
-                                Terms of Service
-                            </a>.
-                        </p>
-
-                        <div className="relative py-3">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-border"/>
-                            </div>
-                            <div className="relative flex justify-center">
-                            <span
-                                className="bg-background px-3 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
-                                Or sign up with
-                            </span>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <Button variant="muted" type="button" className="justify-center gap-2 w-full text-xs py-5">
-                                Google
-                            </Button>
-                            <Button variant="muted" type="button" className="justify-center gap-2 w-full text-xs py-5">
-                                Facebook
-                            </Button>
-                        </div>
                     </form>
 
-                    <p className="mt-10 text-center text-sm text-muted-foreground">
-                        Already part of the thrift community?{" "}
-                        <Link
-                            to="/auth/sign-in"
-                            className="font-medium text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
+                    <div className="relative py-5">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-border"/>
+                        </div>
+
+                        <div className="relative flex justify-center">
+                            <span
+                                className="bg-background px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                                Already Have an Account?
+                            </span>
+                        </div>
+                    </div>
+
+                    <Link to="/auth/sign-in">
+                        <Button
+                            variant="secondary"
+                            className="w-full rounded-xl py-6 text-sm font-semibold"
                         >
-                            Sign in
-                        </Link>
-                    </p>
+                            Sign In
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </Main>
-    )
+    );
 }

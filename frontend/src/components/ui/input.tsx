@@ -17,20 +17,22 @@ type InputProps = {
     size?: InputSize;
     className?: string;
     classNames?: ClassNames;
-    leftIcon?: React.ReactNode
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
 } & Omit<React.ComponentPropsWithoutRef<"input">, "size">;
 
 export const Input = ({
-      label,
-      state = "base",
-      size = 'md',
-      description,
-      className,
-      classNames,
-      id,
-      leftIcon,
-      ...props
-  }: InputProps) => {
+                          label,
+                          description,
+                          state = "base",
+                          size = "md",
+                          className,
+                          classNames,
+                          id,
+                          leftIcon,
+                          rightIcon,
+                          ...props
+                      }: InputProps) => {
     const inputId = id ?? React.useId();
 
     const stateClasses: Record<InputState, string> = {
@@ -41,9 +43,9 @@ export const Input = ({
     };
 
     const sizeClasses = {
-        sm: "h-9 text-sm px-3",
-        md: "h-12 text-sm px-4",
-        lg: "h-14 text-base px-5",
+        sm: "h-8 text-sm px-3",
+        md: "h-10 text-sm px-4",
+        lg: "h-12 text-base px-5",
     } satisfies Record<InputSize, string>;
 
     return (
@@ -53,21 +55,32 @@ export const Input = ({
                     {label}
                 </label>
             )}
-            <div className="w-full relative">
+
+            <div className="relative w-full">
+                {leftIcon && (
+                    <div
+                        className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted-foreground">
+                        {leftIcon}
+                    </div>
+                )}
+
                 <input
                     id={inputId}
                     {...props}
                     className={clsx(
-                        "input",
+                        "input w-full",
                         sizeClasses[size],
                         stateClasses[state],
+                        leftIcon && "pl-11",
+                        rightIcon && "pr-10",
                         className,
                         classNames?.input
                     )}
                 />
-                {leftIcon && (
-                    <div className="absolute flex items-center justify-center top-1/2 -translate-y-1/2 right-5">
-                        {leftIcon}
+
+                {rightIcon && (
+                    <div className="absolute inset-y-0 right-4 flex items-center text-muted-foreground">
+                        {rightIcon}
                     </div>
                 )}
             </div>
