@@ -9,10 +9,12 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.2",
     "nodemon": "^3.1.14",
+    "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@prisma/client": "^7.9.1",
     "body-parser": "^2.3.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
