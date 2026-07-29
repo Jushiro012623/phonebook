@@ -1,10 +1,10 @@
 import AppError from './app-error';
-import {HTTPResponse} from '../response';
+import {HTTPResponse} from '@app/response';
 
 export default class ValidationException extends AppError {
   constructor(
     message = 'Validation failed',
-    errors: Record<string, unknown> = {}
+    errors: { field: string; message: string[] }[] = []
   ) {
     super(
       message,

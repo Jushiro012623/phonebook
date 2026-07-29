@@ -1,15 +1,21 @@
 import 'reflect-metadata';
 import bodyParser from "body-parser";
 import {Application, NextFunction, Request, Response} from "express";
-import NotFoundException from "./exceptions/not-found-exception";
-import {ApiResponse} from "./response";
-import AppError from "./exceptions/app-error";
+import NotFoundException from "@app/exceptions/not-found-exception";
+import {ApiResponse} from "@app/response";
+import {UserController} from "@app/module/user/user.controller";
+import {AuthController} from "@app/module/auth/auth.controller";
+import AppError from "@app/exceptions/app-error";
+
 
 class AppMiddleware {
 
   readonly app: Application;
 
-  private controller = []
+  private controller = [
+    UserController,
+    AuthController
+  ]
 
   constructor(app: Application) {
     this.app = app
@@ -25,7 +31,6 @@ class AppMiddleware {
   }
 
   public routes() {
-
     this.router(this.app, this.controller)
 
     this.app.all("/{*splat}", () => {
@@ -48,14 +53,19 @@ class AppMiddleware {
     });
   }
 
-  private router(app: any, controllers: any[]) {
+  private router(app: any, controllers: any[], apiPrefix = "/api") {
     controllers.forEach((ControllerClass) => {
       const instance = new ControllerClass();
       const prefix = Reflect.getMetadata('prefix', ControllerClass);
       const routes = Reflect.getMetadata('routes', ControllerClass) || [];
+
       routes.forEach((route: any) => {
+        const fullPath = `${apiPrefix}${prefix}${route.path}`;
+        console.log(
+          `[${route.method.toUpperCase()}] ${fullPath} -> ${ControllerClass.name}.${route.handlerName}()`
+        );
         app[route.method](
-          `${prefix}${route.path}`,
+          fullPath,
           instance[route.handlerName].bind(instance)
         );
       });

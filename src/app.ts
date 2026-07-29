@@ -1,5 +1,5 @@
 import express, {Application} from 'express';
-import AppMiddleware from './middleware';
+import AppMiddleware from '@app/middleware';
 
 class ExpressApp {
 

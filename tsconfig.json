@@ -25,7 +25,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     /* Optional */
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "@app/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*"

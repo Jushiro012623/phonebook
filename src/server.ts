@@ -1,5 +1,5 @@
-import ExpressApp from "./app";
-import config from './config/config'
+import ExpressApp from "@app/app";
+import config from '@app/config/config'
 
 const app = new ExpressApp();
 

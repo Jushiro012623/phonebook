@@ -1,3 +1,5 @@
+import {Response, Request} from 'express'
+
 export class HTTPResponse {
   static readonly OK = 200;
   static readonly CREATED = 201;
@@ -42,7 +44,6 @@ export class HTTPResponse {
   }
 }
 
-import {Request, Response} from 'express';
 
 export class ApiResponse {
   static success(

@@ -1,93 +1,39 @@
 import 'reflect-metadata';
 
-export const MetadataKeys = {
-  PREFIX: Symbol('prefix'),
-  ROUTES: Symbol('routes'),
-} as const;
-
-export type HttpMethod =
-  | 'get'
-  | 'post'
-  | 'put'
-  | 'patch'
-  | 'delete'
-  | 'head'
-  | 'options';
-
-export interface RouteDefinition {
-  method: HttpMethod;
-  path: string;
-  handlerName: string | symbol;
-}
-
-export function Controller(prefix = ''): ClassDecorator {
+function Controller(prefix: string = ''): ClassDecorator {
   return (target) => {
-    Reflect.defineMetadata(MetadataKeys.PREFIX, prefix, target);
-
-    if (!Reflect.hasOwnMetadata(MetadataKeys.ROUTES, target)) {
-      Reflect.defineMetadata(
-        MetadataKeys.ROUTES,
-        Object.freeze([]),
-        target
-      );
+    Reflect.defineMetadata('prefix', prefix, target);
+    if (!Reflect.hasMetadata('routes', target)) {
+      Reflect.defineMetadata('routes', [], target);
     }
   };
 }
 
-function createRouteDecorator(method: HttpMethod) {
-  return (path: string): MethodDecorator => {
-    return (target, propertyKey) => {
-      const controller = target.constructor;
+interface RouteDefinition {
+  path: string;
+  method: string;
+  handlerName: string;
+}
 
-      const routes: RouteDefinition[] =
-        Reflect.getOwnMetadata(MetadataKeys.ROUTES, controller) ?? [];
-
-      const duplicate = routes.find(
-        (route) =>
-          route.method === method &&
-          route.path === path
-      );
-
-      if (duplicate) {
-        throw new Error(
-          `Duplicate route detected: [${method.toUpperCase()}] ${path}`
-        );
+function createRouteDecorator(method: string) {
+  return (path: string): MethodDecorator =>
+    (target, propertyKey) => {
+      if (!Reflect.hasMetadata('routes', target.constructor)) {
+        Reflect.defineMetadata('routes', [], target.constructor);
       }
-
-      const nextRoutes = Object.freeze([
-        ...routes,
-        {
-          method,
-          path,
-          handlerName: propertyKey,
-        },
-      ]);
-
-      Reflect.defineMetadata(
-        MetadataKeys.ROUTES,
-        nextRoutes,
-        controller
-      );
+      const routes = Reflect.getMetadata('routes', target.constructor) as RouteDefinition[];
+      routes.push({
+        method,
+        path,
+        handlerName: propertyKey as string,
+      });
+      Reflect.defineMetadata('routes', routes, target.constructor);
     };
-  };
 }
 
-export const Get = createRouteDecorator('get');
-export const Post = createRouteDecorator('post');
-export const Put = createRouteDecorator('put');
-export const Patch = createRouteDecorator('patch');
-export const Delete = createRouteDecorator('delete');
-export const Head = createRouteDecorator('head');
-export const Options = createRouteDecorator('options');
+const Get = createRouteDecorator('get');
+const Post = createRouteDecorator('post');
+const Put = createRouteDecorator('put');
+const Delete = createRouteDecorator('delete');
 
-export function getControllerPrefix(controller: Function): string {
-  return (
-    Reflect.getOwnMetadata(MetadataKeys.PREFIX, controller) ?? ''
-  );
-}
-
-export function getControllerRoutes(controller: Function): readonly RouteDefinition[] {
-  return (
-    Reflect.getOwnMetadata(MetadataKeys.ROUTES, controller) ?? []
-  );
-}
+export {Controller, Get, Post, Put, Delete};
