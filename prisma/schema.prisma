@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  DEACTIVATED
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  email    String @unique
+  password String
+
+  firstName String
+  lastName  String
+
+  role     Role       @default(USER)
+  status   UserStatus @default(PENDING)
+  isActive Boolean    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedShares    ContactShare[]  @relation("Owner")
+  sharedWithMe   ContactShare[]  @relation("Recipient")
+}
+
+model ContactShare {
+  id Int @id @default(autoincrement())
+
+  /// MongoDB Contact ObjectId
+  contactId String
+
+  ownerId Int
+  userId  Int
+
+  owner User @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
+  user  User @relation("Recipient", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([contactId, userId])
+  @@index([contactId])
+  @@index([ownerId])
+  @@index([userId])
+}
