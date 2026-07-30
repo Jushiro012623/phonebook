@@ -9,8 +9,9 @@ export class HashService {
     return bcrypt.compare(raw, hash);
   }
 
-  async hash(value: string): Promise<string> {
-    return bcrypt.hash(value, this.SALT_ROUNDS);
+  async hash(value: string, salt?: number | null): Promise<string> {
+    const saltRounds = salt ?? this.SALT_ROUNDS
+    return bcrypt.hash(value, saltRounds);
   }
 
 }

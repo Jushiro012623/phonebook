@@ -1,4 +1,4 @@
-import {User} from "@app/generated";
+import {User} from "@app/generated/prisma/client";
 
 export class AuthResponseDto {
   id: number;

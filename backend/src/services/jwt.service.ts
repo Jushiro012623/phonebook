@@ -1,14 +1,14 @@
 import jwt, {JwtPayload, SignOptions} from "jsonwebtoken";
 import {Injectable} from "@app/decorators";
-import config from '@app/config/config'
+import config, {type JwtExpiry} from '@app/config/config'
 
 @Injectable()
 export class JwtService {
 
-  sign(payload: object): string {
+  sign(payload: object, expiresIn: JwtExpiry = config.jwt.expiry): string {
     return jwt.sign(payload, config.jwt.key, {
-      expiresIn: config.jwt.expiry,
-    } as SignOptions);
+      expiresIn,
+    });
   }
 
   verify<T extends JwtPayload = JwtPayload>(token: string): T {

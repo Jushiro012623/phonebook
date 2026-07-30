@@ -1,7 +1,7 @@
 import {Injectable} from "@app/decorators";
-import {PrismaClient} from "@app/generated/client";
 import {PrismaMariaDb} from "@prisma/adapter-mariadb";
 import config from "@app/config/config";
+import {PrismaClient} from "@app/generated/prisma/client";
 
 @Injectable()
 export class PrismaService extends PrismaClient {

@@ -33,3 +33,37 @@ export const CreateUserSchema: ValidationChain[] = [
   body("confirmPassword")
     .custom((value, {req}) => value === req.body.password).withMessage("Passwords don't match")
 ];
+
+
+export const LoginUserValidation: ValidationChain[] = [
+  body('username')
+    .notEmpty().withMessage('Username is required')
+    .isString().withMessage('Username must be a string'),
+
+  body('password')
+    .notEmpty().withMessage('Password is required')
+];
+
+export const ForgotPasswordValidation: ValidationChain[] = [
+  body('email')
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Email must be valid email address')
+]
+
+export const VerifyEmailValidation: ValidationChain[] = [
+  body('otp')
+    .notEmpty().withMessage('OTP is required')
+    .isLength({min: 6, max: 6}),
+
+  body('reference')
+    .notEmpty().withMessage('Reference Number is required')
+]
+
+export const ChangePasswordValidation: ValidationChain[] = [
+  body('password')
+    .notEmpty().withMessage('Password is required')
+    .isLength({min: 8}).withMessage('Password must be at least 8 characters'),
+
+  body("confirmPassword")
+    .custom((value, {req}) => value === req.body.password).withMessage("Passwords don't match")
+];
