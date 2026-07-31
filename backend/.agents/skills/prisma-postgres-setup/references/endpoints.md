@@ -8,7 +8,7 @@ Management API endpoint details for database setup workflows.
 GET /v1/regions/postgres
 ```
 
-No request body. Returns available Prisma Postgres regions.
+No requestServer body. Returns available Prisma Postgres regions.
 
 **Response:**
 

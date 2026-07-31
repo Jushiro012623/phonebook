@@ -5,8 +5,10 @@ import NotFoundException from "@app/exceptions/not-found-exception";
 import {ApiResponse} from "@app/response";
 import {UserController} from "@app/module/user/user.controller";
 import {AuthController} from "@app/module/auth/auth.controller";
+import {ContactShareController} from "@app/module/contact-share/contact-share.controller";
+import {ContactController} from "@app/module/contact/contact.controller";
 import AppError from "@app/exceptions/app-error";
-
+import cors from 'cors'
 
 class AppMiddleware {
 
@@ -14,7 +16,9 @@ class AppMiddleware {
 
   private controller = [
     UserController,
-    AuthController
+    AuthController,
+    ContactController,
+    ContactShareController
   ]
 
   constructor(app: Application) {
@@ -27,7 +31,11 @@ class AppMiddleware {
   }
 
   public security() {
-
+    this.app.use(cors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true,
+    }))
+    console.log(process.env.FRONTEND_URL)
   }
 
   public routes() {
@@ -49,7 +57,7 @@ class AppMiddleware {
         );
       }
       console.error(err);
-      return ApiResponse.fail(req, res, 'Internal Server Error', {}, 500);
+      return ApiResponse.fail(req, res, 'Internal Server Error', {err}, 500);
     });
   }
 

@@ -105,7 +105,7 @@ If the response status is `provisioning`, wait a few seconds and poll `GET /v1/d
 
 **If creation fails due to a database limit**, list the user's existing projects and present them as an interactive menu for deletion. After the user picks one, delete it and retry.
 
-Read `references/endpoints.md` for the full request/response shapes.
+Read `references/endpoints.md` for the full requestServer/response shapes.
 
 ### Step 4: Create a named connection (optional)
 
@@ -248,7 +248,7 @@ Read `references/api-basics.md` for the full error reference. Key self-correctio
 |---|---|---|
 | 401 | `authentication-failed` | Service token is invalid or expired. Ask the user to create a new one in Console → Workspace Settings → Service Tokens. |
 | 404 | `resource-not-found` | Check that the resource ID includes the correct prefix (`proj_`, `db_`, `con_`). |
-| 422 | `validation-error` | Check request body against the endpoint schema. Common: missing `name`, invalid `region`. |
+| 422 | `validation-error` | Check requestServer body against the endpoint schema. Common: missing `name`, invalid `region`. |
 | 429 | `rate-limit-exceeded` | Back off and retry after a few seconds. |
 
 ## Reference Files

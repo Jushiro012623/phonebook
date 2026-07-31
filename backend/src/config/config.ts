@@ -17,6 +17,11 @@ interface Config {
     name: string;
   };
 
+  mongodb: {
+    uri: string;
+    database: string;
+  };
+
   jwt: {
     key: string;
     expiry: JwtExpiry;
@@ -42,6 +47,11 @@ const config: Config = {
     username: process.env.DB_USERNAME || "root",
     password: process.env.DB_PASSWORD || "",
     name: process.env.DB_DATABASE || "",
+  },
+
+  mongodb: {
+    uri: process.env.MONGODB_URI || "mongodb://localhost:27017/phonebook_contacts",
+    database: process.env.MONGODB_DATABASE || "phonebook_contacts",
   },
 
   jwt: {

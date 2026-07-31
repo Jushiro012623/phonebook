@@ -21,7 +21,7 @@ Set the token as an environment variable:
 export PRISMA_SERVICE_TOKEN="eyJ..."
 ```
 
-Include it in the `Authorization` header of every API request:
+Include it in the `Authorization` header of every API requestServer:
 
 ```bash
 curl -H "Authorization: Bearer $PRISMA_SERVICE_TOKEN" \

@@ -34,6 +34,7 @@ function createRouteDecorator(method: string) {
 const Get = createRouteDecorator('get');
 const Post = createRouteDecorator('post');
 const Put = createRouteDecorator('put');
+const Patch = createRouteDecorator('patch');
 const Delete = createRouteDecorator('delete');
 
-export {Controller, Get, Post, Put, Delete};
+export {Controller, Get, Post, Put, Patch, Delete};

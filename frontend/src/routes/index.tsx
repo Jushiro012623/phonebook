@@ -1,9 +1,12 @@
-import {createFileRoute} from "@tanstack/react-router";
+import {createFileRoute} from '@tanstack/react-router'
+import {getUsers} from "#/api/users.ts";
 
-export const Route = createFileRoute('/')({
-    component: Home,
-})
+export const Route = createFileRoute("/")({
+    loader: async () => getUsers(),
+    component: Home
+});
 
 function Home() {
-    return <></>
+    const users = Route.useLoaderData();
+    return <pre>{JSON.stringify(users, null, 2)}</pre>;
 }

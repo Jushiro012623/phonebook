@@ -86,7 +86,7 @@ All errors follow this shape:
 
 | HTTP Status | Error Code | Meaning |
 |---|---|---|
-| 400 | `client-error` | Malformed request |
+| 400 | `client-error` | Malformed requestServer |
 | 401 | `authentication-failed` | Missing or invalid token |
 | 403 | `permission-denied` | Token lacks required access |
 | 404 | `resource-not-found` | Resource does not exist or is not accessible |
@@ -98,5 +98,5 @@ All errors follow this shape:
 
 - **401**: Token is invalid or expired. Create a new service token in Console → Workspace Settings → Service Tokens.
 - **404**: Verify the resource ID includes the correct prefix (`proj_`, `db_`, `con_`). Use `GET /v1/projects` or `GET /v1/databases` to list available resources.
-- **422**: Check the request body against the endpoint schema. Common issues: missing required fields, invalid region ID, empty `name`.
+- **422**: Check the requestServer body against the endpoint schema. Common issues: missing required fields, invalid region ID, empty `name`.
 - **429**: Wait 2–5 seconds and retry. If repeated, increase the backoff interval.

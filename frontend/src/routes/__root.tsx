@@ -2,6 +2,9 @@ import {HeadContent, Scripts, createRootRoute} from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 import 'lenis/dist/lenis.css'
 import {LenisProvider, ToastProvider} from "#/providers";
+import {ErrorComponent} from "@components/layout/error.tsx";
+import {NotFound} from "@components/layout/not-found.tsx";
+import type {ApiError} from "#/api/api-error.ts";
 
 const THEME_DARK = `
 (function () {
@@ -28,7 +31,7 @@ export const Route = createRootRoute({
                 content: 'width=device-width, initial-scale=1',
             },
             {
-                title: 'Phone Book',
+                title: import.meta.env.VITE_APP_NAME,
             },
             {
                 name: "viewport",
@@ -48,8 +51,17 @@ export const Route = createRootRoute({
 
         ],
     }),
+    notFoundComponent: NotFound,
     shellComponent: RootDocument,
-
+    errorComponent: ({error}) => {
+        const apiError = error as Partial<ApiError>;
+        return (
+            <ErrorComponent
+                title={apiError.title ?? "Internal Error"}
+                message={apiError.message ?? "Unexpected error"}
+            />
+        );
+    }
 })
 
 function RootDocument({children}: { children: React.ReactNode }) {

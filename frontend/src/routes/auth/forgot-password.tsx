@@ -7,6 +7,8 @@ import {toast} from "#/lib/utils";
 import {useFormValue} from "#/hooks";
 import {forgotPasswordSchema} from "#/lib/zod/schema";
 import {RESEND_SECONDS} from "#/constants.ts";
+import {forgotPassword, verifyEmail} from "#/api/auth.ts";
+import {handleAuthFormError} from "#/lib/auth-form";
 
 export const Route = createFileRoute("/auth/forgot-password")({
     component: ForgotPassword,
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/auth/forgot-password")({
 function ForgotPassword() {
 
     const {formValue, handleOnChange, errors, setErrors} = useFormValue<ForgotPasswordFormValue>({email: "",});
+    const [verifyForm, setVerifyForm] = useState<VerifyEmailFormValue>({otp: "", reference: ""})
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [opt, setOtp] = useState<string>('')
     const [resendTimer, setResendTimer] = useState<number>(0)
@@ -40,7 +43,7 @@ function ForgotPassword() {
         resendTimer % 60
     ).padStart(2, "0")}`;
 
-    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const result = forgotPasswordSchema.safeParse(formValue);
@@ -60,23 +63,46 @@ function ForgotPassword() {
             return;
         }
 
-        setIsModalOpen(true);
-        setResendTimer(RESEND_SECONDS);
+        try {
+            const response = await forgotPassword({data: formValue,});
+            toast.success("Success", response.message);
 
-        toast.success("OTP Sent", "Please check your email.");
+            setIsModalOpen(true);
+            setResendTimer(RESEND_SECONDS);
+            setVerifyForm({otp: response.data.otp, reference: response.data.reference})
+            setOtp(response.data.otp)
+        } catch (error) {
+            handleAuthFormError(error, "Verification Failed", setErrors);
+        }
     };
 
-    const handleResendOTP = () => {
+    const handleResendOTP = async () => {
         setOtp('')
         setResendTimer(RESEND_SECONDS);
-        toast.success("OTP Sent", "Please check your email.");
+        try {
+            const response = await forgotPassword({data: formValue});
+            toast.success("Success", response.message);
+
+            setResendTimer(RESEND_SECONDS);
+            setVerifyForm({otp: response.data.otp, reference: response.data.reference})
+            setOtp(response.data.otp)
+        } catch (error) {
+            handleAuthFormError(error, "Verification Failed", setErrors);
+        }
     }
 
-    const handleVerifyOTP = () => {
-        setIsModalOpen(false)
-        toast.success("Success", "Email Verified Success.");
-        return navigate({to: '/auth/change-password'})
+    const handleVerifyOTP = async () => {
+        try {
+            const response = await verifyEmail({data: verifyForm});
+            toast.success("Success", response.message);
+            setIsModalOpen(false);
+            return navigate({to: '/auth/change-password'})
+
+        } catch (error) {
+            handleAuthFormError(error, "Verification Failed", setErrors);
+        }
     }
+
     return (
         <Main className="flex flex-col justify-center">
             <div className="mx-auto flex h-fit w-full p-6 sm:p-12 md:p-16 lg:w-1/2">
@@ -84,16 +110,16 @@ function ForgotPassword() {
 
                 <div className="card mx-auto w-full max-w-lg p-10">
                     <header className="mb-5 flex flex-col items-center space-y-3 text-center">
-                    <Brand />
+                        <Brand/>
 
-                    <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-                        Forgot your password?
-                    </h1>
+                        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
+                            Forgot your password?
+                        </h1>
 
-                    <p className="max-w-md text-sm leading-6 text-muted-foreground">
-                        Enter your email address and we'll send you a verification code to reset your password.
-                    </p>
-                </header>
+                        <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                            Enter your email address and we'll send you a verification code to reset your password.
+                        </p>
+                    </header>
 
                     <form
                         className="space-y-5"

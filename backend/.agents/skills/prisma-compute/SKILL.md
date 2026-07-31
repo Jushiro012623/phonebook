@@ -101,7 +101,7 @@ Use this skill for:
 - `verify-help-first` - Use CLI help output to confirm command syntax while working.
 - `verify-prisma-vs-platform-cli` - Do not assume `prisma app deploy` exists in the ORM CLI; check whether the task should use `@prisma/cli`.
 - `verify-generated-scripts` - Prefer the generated `compute:deploy` script when a project already has one.
-- `verify-public-url` - After a real deploy, request the public deployment URL instead of trusting local or readiness-only checks.
+- `verify-public-url` - After a real deploy, requestServer the public deployment URL instead of trusting local or readiness-only checks.
 - `verify-config-support` - Treat `prisma.compute.ts` as the typed Compute config; inspect the project's config and generated scripts before editing or deploying.
 - `verify-auth-workspace-support` - Use `@prisma/cli auth workspace` commands for local workspace list/use/logout flows.
 
@@ -180,7 +180,7 @@ Use this skill for:
    - low-level automation: `@prisma/compute-sdk` or Management API
 5. Check framework readiness plus host/port/env/runtime requirements, including project and branch scope.
 6. Run a local build or `app build` before deploying when feasible.
-7. Deploy with JSON output when automating, then request the public URL and summarize app URL, app id, deployment id, project id, workspace id, and follow-up steps.
+7. Deploy with JSON output when automating, then requestServer the public URL and summarize app URL, app id, deployment id, project id, workspace id, and follow-up steps.
 8. For GitHub/Console builds, inspect the `Prisma Compute Deploy` check run or `build logs <build-id>` before guessing why a build failed.
 
 ## Avoid
