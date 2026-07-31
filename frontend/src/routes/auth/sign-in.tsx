@@ -1,4 +1,4 @@
-import {createFileRoute, Link} from '@tanstack/react-router'
+import {createFileRoute, Link, useNavigate} from '@tanstack/react-router'
 import {Button, Input, Main} from '#/components/ui'
 import {Brand, GridBackground} from "@components/layout";
 import {Lock, Mail} from "lucide-react";
@@ -6,6 +6,8 @@ import {cn, toast} from "#/lib/utils.ts";
 import {useEyeToggle, useFormValue} from "#/hooks";
 import {type FormEvent, useState} from "react";
 import {signInSchema} from "#/lib/zod/schema.ts";
+import {signInFn} from "#/api/auth.ts";
+import {handleAuthFormError} from "#/lib/auth-form";
 
 export const Route = createFileRoute('/auth/sign-in')({
     component: SignIn,
@@ -20,14 +22,15 @@ export const Route = createFileRoute('/auth/sign-in')({
 
 function SignIn() {
 
+    const navigate = useNavigate()
     const passwordInput = useEyeToggle()
 
     const {formValue, handleOnChange, errors, setErrors} = useFormValue<SignInFormValue>({username: '', password: ''});
 
     const [rememberMe, setRememberMe] = useState(false);
 
-    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
         const result = signInSchema.safeParse(formValue);
 
@@ -37,14 +40,20 @@ function SignIn() {
             setErrors({
                 username: fieldErrors.username?.[0],
                 password: fieldErrors.password?.[0],
-            })
+            });
 
             toast.error("Validation Error", "Please check the highlighted fields.");
             return;
         }
 
-        toast.success("SUCCESS", "LOGGED IN SUCCESSFULLY");
-    }
+        try {
+            const response = await signInFn({data: formValue,});
+            toast.success("Login Successful", response.message);
+            await navigate({to: "/"});
+        } catch (error) {
+            handleAuthFormError(error, "Sign In Failed", setErrors);
+        }
+    };
 
     return (
         <Main className="flex flex-col justify-center">

@@ -1,4 +1,4 @@
-import {createFileRoute, Link} from '@tanstack/react-router'
+import {createFileRoute, Link, useNavigate} from '@tanstack/react-router'
 import {type FormEvent} from "react";
 import {Lock, Mail, User} from "lucide-react";
 import {Button, Input, Main} from "#/components/ui";
@@ -7,6 +7,8 @@ import {cn, toast} from "#/lib/utils.ts";
 import {useEyeToggle} from "#/hooks";
 import {useFormValue} from "#/hooks/useFormValue.tsx";
 import {signUpSchema} from "#/lib/zod/schema.ts";
+import {signUp} from "#/api/auth.ts";
+import {handleAuthFormError} from "#/lib/auth-form";
 
 export const Route = createFileRoute("/auth/sign-up")({
     component: SignUp,
@@ -20,7 +22,7 @@ export const Route = createFileRoute("/auth/sign-up")({
 });
 
 function SignUp() {
-
+    const navigate = useNavigate();
     const passwordInput = useEyeToggle()
     const confirmPasswordInput = useEyeToggle()
 
@@ -29,14 +31,13 @@ function SignUp() {
     })
     const {confirmPassword, password, email, username} = formValue
 
-    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         const result = signUpSchema.safeParse(formValue);
 
         if (!result.success) {
             const fieldErrors = result.error.flatten().fieldErrors;
-
             setErrors({
                 username: fieldErrors.username?.[0],
                 password: fieldErrors.password?.[0],
@@ -48,7 +49,15 @@ function SignUp() {
             return;
         }
 
-        toast.success("SUCCESS", "ACCOUNT CREATED SUCCESSFULLY")
+        try {
+            const response = await signUp({data: formValue,});
+            toast.success("Sign Up Successful", response.message);
+            await navigate({to: "/"});
+
+        } catch (error: unknown) {
+            handleAuthFormError(error, "Sign Up Failed", setErrors);
+        }
+
     }
 
     return (

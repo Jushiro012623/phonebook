@@ -28,7 +28,7 @@ export const Route = createRootRoute({
                 content: 'width=device-width, initial-scale=1',
             },
             {
-                title: 'Phone Book',
+                title: import.meta.env.VITE_APP_NAME,
             },
             {
                 name: "viewport",

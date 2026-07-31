@@ -1,4 +1,4 @@
-import {createFileRoute} from "@tanstack/react-router";
+import {createFileRoute,useNavigate} from "@tanstack/react-router";
 import {Brand, GridBackground} from "@components/layout";
 import {Button, Input, Main} from "@components/ui";
 import {Lock} from "lucide-react";
@@ -6,19 +6,22 @@ import {cn, toast} from "#/lib/utils.ts";
 import type {FormEvent} from "react";
 import {changePasswordSchema} from "#/lib/zod/schema.ts";
 import {useEyeToggle, useFormValue} from "#/hooks";
+import {changePassword} from "#/api/auth.ts";
+import {handleAuthFormError} from "#/lib/auth-form";
 
 export const Route = createFileRoute("/auth/change-password")({
     component: ChangePassword,
     head: () => ({
         meta: [
             {
-                title: "Change Password | Phone Book",
+                title: `Change Password | ${import.meta.env.VITE_APP_NAME}`,
             },
         ],
     }),
 });
 
 function ChangePassword() {
+    const navigate = useNavigate()
     const passwordInput = useEyeToggle();
     const confirmPasswordInput = useEyeToggle();
 
@@ -28,7 +31,7 @@ function ChangePassword() {
             confirmPassword: "",
         });
 
-    const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const result = changePasswordSchema.safeParse(formValue);
@@ -49,10 +52,13 @@ function ChangePassword() {
             return;
         }
 
-        toast.success(
-            "Password Updated",
-            "Your password has been updated successfully."
-        );
+        try {
+            const response = await changePassword({data: formValue,});
+            toast.success("Change Password Successful", response.message);
+            await navigate({to: "/auth/sign-in"});
+        } catch (error) {
+            handleAuthFormError(error, "Change Password Failed", setErrors);
+        }
     };
 
     return (
